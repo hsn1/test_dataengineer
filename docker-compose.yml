@@ -1,0 +1,27 @@
+services:
+  jupyter:
+    build: .
+    container_name: demand-notebook
+    ports:
+      - "8888:8888"
+    volumes:
+      # mets ton notebook dans ./notebooks en local
+      - ./notebooks:/workspace/notebooks
+      # (optionnel) cache HF pour éviter de re-télécharger les modèles
+      - hf_cache:/root/.cache/huggingface
+    environment:
+      - JUPYTER_TOKEN=local
+      - PYTHONUNBUFFERED=1
+    command: >
+      bash -lc "
+      jupyter lab
+      --ip=0.0.0.0
+      --port=8888
+      --no-browser
+      --NotebookApp.token=${JUPYTER_TOKEN}
+      --NotebookApp.password=''
+      --notebook-dir=/workspace/notebooks
+      --allow-root
+      "
+volumes:
+  hf_cache:
